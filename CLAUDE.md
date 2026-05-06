@@ -1,69 +1,69 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+本文件为 Claude Code (claude.ai/code) 在此仓库中工作时提供指引。
 
 @AGENTS.md
 
-## Commands
+## 命令
 
 ```bash
-npm run dev      # Development server on localhost:3000
-npm run build    # Static export build (output: "export")
-npm run start    # Serve the static build
-npm run lint     # ESLint (eslint-config-next)
+npm run dev      # 启动开发服务器 localhost:3000
+npm run build    # 静态导出构建（output: "export"）
+npm run start    # 启动静态构建服务
+npm run lint     # ESLint 代码检查（eslint-config-next）
 ```
 
-No test framework is configured yet.
+暂未配置测试框架。
 
-## Architecture
+## 架构
 
-**Pure static site** 鈥?no backend, no database, no API routes. All content lives in TypeScript files under `src/data/`. The site is deployed as a static export (`output: "export"` in next.config.ts).
+**纯静态站点** — 无后端、无数据库、无 API 路由。所有内容存储在 `src/data/` 下的 TypeScript 文件中。站点以静态导出方式部署（next.config.ts 中 `output: "export"`）。
 
-**Stack**: Next.js 16 + React 19 + Tailwind CSS 4 + TypeScript + Framer Motion + Lucide React.
+**技术栈**：Next.js 16 + React 19 + Tailwind CSS 4 + TypeScript + Framer Motion + Lucide React。
 
-### Routing (App Router, file-based)
+### 路由（App Router，基于文件）
 
-| Route | File | Purpose |
+| 路由 | 文件 | 用途 |
 |---|---|---|
-| `/` | `src/app/page.tsx` | Homepage: Hero, Services, Projects, Testimonials, ContactCTA |
-| `/projects` | `src/app/projects/page.tsx` | Full project showcase |
-| `/services` | `src/app/services/page.tsx` | Service pricing details |
-| `/testimonials` | `src/app/testimonials/page.tsx` | All client testimonials |
-| `/contact` | `src/app/contact/page.tsx` | Contact form + social links |
+| `/` | `src/app/page.tsx` | 首页：Hero、服务、项目、评价、联系引导 |
+| `/projects` | `src/app/projects/page.tsx` | 项目案例展示 |
+| `/services` | `src/app/services/page.tsx` | 服务报价详情 |
+| `/testimonials` | `src/app/testimonials/page.tsx` | 客户评价 |
+| `/contact` | `src/app/contact/page.tsx` | 联系表单 + 社交方式 |
 
-### Layout hierarchy
+### 布局层级
 
-`RootLayout` (`src/app/layout.tsx`) 鈫?`ClientLayout` (`src/components/layout/ClientLayout.tsx`) 鈫?pages.
+`RootLayout`（`src/app/layout.tsx`）→ `ClientLayout`（`src/components/layout/ClientLayout.tsx`）→ 页面。
 
-`ClientLayout` wraps everything in `LanguageProvider` and renders `Navbar` + `<main>` + `Footer`. The entire app is a client component because of the language context 鈥?there are no Server Components in practice.
+`ClientLayout` 使用 `LanguageProvider` 包裹所有内容，渲染 `Navbar` + `<main>` + `Footer`。由于语言上下文的存在，整个应用都是客户端组件 — 实际上没有服务端组件。
 
-### i18n (zh/en)
+### 国际化（中/英）
 
-Custom Context-based i18n, no external library. Core types and translations are in [`src/utils/i18n.ts`](src/utils/i18n.ts):
-- `I18nText` type: `{ zh: string; en: string }` 鈥?used across all data models
-- `translations` object: all UI strings keyed by section
-- `t(text, locale)` helper to resolve an `I18nText` to a string
-- `useLanguage()` hook from [`src/hooks/useLanguage.ts`](src/hooks/useLanguage.ts) provides `{ locale, toggleLocale }`
+基于 Context 的自定义国际化方案，无外部依赖。核心类型和翻译定义在 [`src/utils/i18n.ts`](src/utils/i18n.ts)：
+- `I18nText` 类型：`{ zh: string; en: string }` — 所有数据模型通用
+- `translations` 对象：按模块分组的所有 UI 文案
+- `t(text, locale)` 辅助函数：将 `I18nText` 解析为当前语言的字符串
+- `useLanguage()` 钩子（[`src/hooks/useLanguage.ts`](src/hooks/useLanguage.ts)）提供 `{ locale, toggleLocale }`
 
-All data types (`Project`, `Service`, `Testimonial`) use `I18nText` for user-facing strings, defined in [`src/types/index.ts`](src/types/index.ts).
+所有数据类型（`Project`、`Service`、`Testimonial`）的用户可见字段均使用 `I18nText`，定义在 [`src/types/index.ts`](src/types/index.ts)。
 
-### Data flow
+### 数据流
 
-Static data arrays in `src/data/*.ts` 鈫?imported by page and card components 鈫?rendered with i18n resolution. No fetching, no state management library.
+`src/data/*.ts` 中的静态数据数组 → 页面和卡片组件导入 → 通过国际化解析渲染。无数据请求，无状态管理库。
 
-### Shared utilities
+### 通用工具
 
-- `cn(...inputs)` in [`src/utils/cn.ts`](src/utils/cn.ts): `clsx` + `tailwind-merge` for conditional class merging. Always use `cn()` instead of raw template literals for className.
-- `useScrollAnimation(threshold)` in [`src/hooks/useScrollAnimation.ts`](src/hooks/useScrollAnimation.ts): returns `{ ref, isVisible }` using IntersectionObserver for scroll-triggered entrance animations.
+- `cn(...inputs)`（[`src/utils/cn.ts`](src/utils/cn.ts)）：`clsx` + `tailwind-merge` 条件类名合并。始终使用 `cn()` 而非原始模板字符串拼接 className。
+- `useScrollAnimation(threshold)`（[`src/hooks/useScrollAnimation.ts`](src/hooks/useScrollAnimation.ts)）：基于 IntersectionObserver 返回 `{ ref, isVisible }`，用于滚动触发入场动画。
 
-### Shared components
+### 通用组件
 
-- `GradientButton`: 3 variants (`primary`, `secondary`, `outline`), 3 sizes, used everywhere
-- `LanguageSwitch`: toggles zh/en, placed in Navbar
-- `ProjectCard`, `ServiceCard`, `TestimonialCard`: reusable card components with Framer Motion animations
+- `GradientButton`：3 种变体（`primary`、`secondary`、`outline`），3 种尺寸，全局复用
+- `LanguageSwitch`：中/英切换，放置在导航栏
+- `ProjectCard`、`ServiceCard`、`TestimonialCard`：带 Framer Motion 动画的可复用卡片组件
 
-### Styling
+### 样式
 
-Tailwind CSS 4 with custom theme variables defined in [`src/app/globals.css`](src/app/globals.css) (`--color-background: #0f172a`, `--color-foreground: #e2e8f0`). Design uses dark theme with cyan/pink gradient accents, glassmorphism cards, and scroll-triggered animations via Framer Motion.
+Tailwind CSS 4，自定义主题变量定义在 [`src/app/globals.css`](src/app/globals.css)（`--color-background: #0f172a`、`--color-foreground: #e2e8f0`）。采用深色主题 + 青色/粉色渐变强调色、毛玻璃卡片、Framer Motion 滚动触发动画。
 
-Custom CSS animations (`animate-float`, `animate-glow`) are defined in globals.css for use anywhere.
+自定义 CSS 动画（`animate-float`、`animate-glow`）定义在 globals.css 中，可全局使用。
