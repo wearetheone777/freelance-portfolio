@@ -44,6 +44,17 @@ export const translations = {
     viewAll: { zh: "查看全部", en: "View All" },
     filterAll: { zh: "全部", en: "All" },
     visitProject: { zh: "访问项目", en: "Visit Project" },
+    back: { zh: "返回项目列表", en: "Back to Projects" },
+    overview: { zh: "项目概述", en: "Overview" },
+    techStack: { zh: "技术栈", en: "Tech Stack" },
+    features: { zh: "功能亮点", en: "Key Features" },
+    screenshots: { zh: "项目截图", en: "Screenshots" },
+    visitLive: { zh: "访问线上项目", en: "Visit Live Project" },
+    notFound: { zh: "项目未找到", en: "Project Not Found" },
+    notFoundDesc: {
+      zh: "你访问的项目不存在或已被移除",
+      en: "The project you're looking for doesn't exist or has been removed",
+    },
   },
   testimonials: {
     title: { zh: "客户评价", en: "Client Testimonials" },
