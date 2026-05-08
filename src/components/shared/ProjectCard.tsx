@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Project } from "@/types";
 import { useLanguage } from "@/hooks/useLanguage";
 import { t } from "@/utils/i18n";
@@ -61,15 +62,13 @@ export function ProjectCard({ project, index = 0, className }: ProjectCardProps)
           ))}
         </div>
 
-        {project.link && (
-          <a
-            href={project.link}
-            className="inline-flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
-          >
-            {locale === "zh" ? "查看详情" : "View Details"}
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        )}
+        <Link
+          href={`/projects/${project.id}`}
+          className="inline-flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+        >
+          {locale === "zh" ? "查看详情" : "View Details"}
+          <ExternalLink className="w-3.5 h-3.5" />
+        </Link>
       </div>
     </motion.div>
   );
